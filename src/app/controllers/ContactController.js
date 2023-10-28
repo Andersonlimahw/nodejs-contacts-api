@@ -68,6 +68,11 @@ class ContactController {
       return response.status(404).json({ error: `User with id ${id} not found.`});
     }
 
+    const contactExistsByEmail = await ContactRepository.findByEmail(email);
+    if(contactExistsByEmail && contactExistsByEmail.id !== id){
+      return response.status(400).json({ error: `User with e-mail ${email} all ready exists`});
+    }
+
     await ContactRepository.update({
       id,
       name,
