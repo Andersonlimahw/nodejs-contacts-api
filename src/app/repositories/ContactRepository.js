@@ -42,6 +42,35 @@ class ContactRepository {
       });
     });
   }
+
+  update({
+    id,
+    name,
+    email,
+    phone,
+    category_id
+  }) {
+    return new Promise((resolve, reject) => {
+      const updatedContacts = contacts.map((contact) => {
+        if(contact.id === id) {
+          return {
+            ...contact,
+            name: name || contact.name,
+            email: email || contact.email,
+            phone: phone || contact.phone,
+            category_id: category_id || contact.category_id
+          }
+        }
+        return contact;
+      });
+
+      contacts = updatedContacts;
+
+      resolve({
+        id
+      });
+    });
+  }
 }
 
 module.exports = new ContactRepository();
