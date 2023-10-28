@@ -19,8 +19,23 @@ class ContactController {
     response.json(contact);
   }
 
-  store() {
+  async store(request, response) {
     // Criar um registro exemplo POST endpoint/
+    const { name, email, phone, category_id } = request.body;
+
+    const contactExists = await ContactRepository.findByEmail(email);
+    if(contactExists){
+      return response.status(400).json({ error: `User with e-mail ${email} all ready exists`});
+    }
+
+    const contact = await ContactRepository.create({
+      name,
+      email,
+      phone,
+      category_id
+    });
+
+    response.status(201).json(contact);
   }
 
   update() {
