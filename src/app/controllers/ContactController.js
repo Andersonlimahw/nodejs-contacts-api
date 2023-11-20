@@ -4,14 +4,15 @@ class ContactController {
 
   async index(request, response) {
     // Listar todos os registros  GET endpoint/:id
-    const contacts = await ContactRepository.findAll();
+    const { orderBy } = request.query;
+    const contacts = await ContactRepository.findAll(orderBy || 'ASC');
     response.json(contacts);
   }
 
   async show(request, response) {
     // Obter um registro exemplo GET endpoint/:id
     const { id } = request.params;
-    const contact = await await ContactRepository.findById(id);
+    const contact = await ContactRepository.findById(id);
 
     if(!contact){
       return response.status(404).json({ error: `User not found with id ${id}`});
@@ -87,12 +88,6 @@ class ContactController {
   async delete(request, response) {
     // remover um registro exemplo DELETE endpoint/:id
     const { id } = request.params;
-
-    const contact = await ContactRepository.findById(id);
-    if(!contact){
-      return response.status(404).json({ error: `User not found with id ${id}`});
-    }
-
     await ContactRepository.delete(id)
 
     response.sendStatus(204);
