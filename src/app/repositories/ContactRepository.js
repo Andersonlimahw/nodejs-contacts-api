@@ -1,5 +1,4 @@
-const { uuid } = require("uuidv4");
-let contacts = require("../mocks/contacts");
+
 const db = require('../../database/index');
 
 class ContactRepository {
@@ -7,12 +6,15 @@ class ContactRepository {
   async findAll(orderBy = 'ASC') {
     const direction = orderBy.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
     const rows = await db.query(`SELECT
-      id,
-      name,
-      email,
-      phone
-      category_id
-     FROM contacts
+      contact.id,
+      contact.name,
+      contact.phone,
+      contact.email,
+      category.id as category_id,
+      category.name as category_name
+     FROM contacts contact
+      LEFT JOIN categories category
+      ON category.id = contact.category_id
      ORDER BY name ${direction}`);
      return rows;
   }
