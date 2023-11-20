@@ -10,7 +10,7 @@ class ContactRepository {
       contact.name,
       contact.phone,
       contact.email,
-      category.id as category_id,
+      category.id as category_id_value,
       category.name as category_name
      FROM contacts contact
       LEFT JOIN categories category
@@ -20,7 +20,13 @@ class ContactRepository {
   }
 
   async findById(id) {
-    const [row] = await db.query(`SELECT * FROM contacts WHERE id = $1`, [id]);
+    const [row] = await db.query(`SELECT
+          contact.*,
+          category.name as category_name
+        FROM contacts contact
+          LEFT JOIN categories category
+          ON category.id = contact.category_id
+        WHERE contact.id = $1`, [id]);
     console.log('ContactRepository: findById => row', row);
     return row;
   }
