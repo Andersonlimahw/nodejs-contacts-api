@@ -10,6 +10,46 @@
 			"name": "contacts",
 			"item": [
 				{
+					"name": "List : contacts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"     var jsonData = pm.response.json();\r",
+									"    const [firstContact] = jsonData;\r",
+									"    pm.globals.set(\"firstContactId\", firstContact.id);\r",
+									"    console.log('vars', firstContact.id, jsonData);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlNodejs}}/contacts?ordeBy=ASC",
+							"host": [
+								"{{baseUrlNodejs}}"
+							],
+							"path": [
+								"contacts"
+							],
+							"query": [
+								{
+									"key": "ordeBy",
+									"value": "ASC"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create: contact",
 					"event": [
 						{
@@ -57,6 +97,53 @@
 					"response": []
 				},
 				{
+					"name": "Create: contact - categoryless",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);   \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Return id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    console.log('[POST] : response id', jsonData);\r",
+									"    const id = jsonData.id;  \r",
+									"    pm.expect(id !== null).true\r",
+									"    pm.globals.set(\"firstContactId\", id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlNodejs}}/contacts",
+							"host": [
+								"{{baseUrlNodejs}}"
+							],
+							"path": [
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "update: contact by id",
 					"event": [
 						{
@@ -76,7 +163,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\",\r\n    \"category_id\": \"{{$guid}}\"\r\n}",
+							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\",\r\n    \"category_id\": \"ebbefe92-1643-4781-bfd6-f05e2115c14a\" \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -103,14 +190,14 @@
 					"response": []
 				},
 				{
-					"name": "List : contacts",
+					"name": "update: contact by id - categoryless",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -118,15 +205,31 @@
 						}
 					],
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Anderson Lima\",\r\n    \"email\": \"lemon@lemon.tech\",\r\n    \"phone\": \"1195151548\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseUrlNodejs}}/contacts",
+							"raw": "{{baseUrlNodejs}}/contacts/:id",
 							"host": [
 								"{{baseUrlNodejs}}"
 							],
 							"path": [
-								"contacts"
+								"contacts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2f1218a9-3ebf-4946-a73a-21d1908f8e01"
+								}
 							]
 						}
 					},
@@ -238,6 +341,54 @@
 									"key": "id",
 									"value": "{{firstContactId}}"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "GET categories Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Whatsapp\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlNodejs}}/categories",
+							"host": [
+								"{{baseUrlNodejs}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlNodejs}}/categories",
+							"host": [
+								"{{baseUrlNodejs}}"
+							],
+							"path": [
+								"categories"
 							]
 						}
 					},
